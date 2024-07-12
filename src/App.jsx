@@ -3,7 +3,8 @@ import {
   BrowserRouter as Router,
   Routes, Route, Link,
   useMatch,
-  useParams
+  useParams,
+  useNavigate
 } from 'react-router-dom'
 
 
@@ -61,6 +62,8 @@ const CreateNew = (props) => {
   const [author, setAuthor] = useState('')
   const [info, setInfo] = useState('')
 
+  const navigate = useNavigate();
+
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -70,6 +73,7 @@ const CreateNew = (props) => {
       info,
       votes: 0
     })
+    navigate("/")
   }
 
   return (
@@ -133,6 +137,11 @@ const App = () => {
   const addNew = (anecdote) => {
     anecdote.id = Math.round(Math.random() * 10000)
     setAnecdotes(anecdotes.concat(anecdote))
+    
+    setNotification(`A new anecdote "${anecdote.content}" created!`)
+    setTimeout(() => {
+      setNotification('')
+    }, 5000);
   }
 
   const anecdoteById = (id) =>
@@ -155,13 +164,14 @@ const App = () => {
       <div>
         <h1>Software anecdotes</h1>
         <Menu />
+        {notification !== '' && <p>{notification}</p>}
       </div>
 
       <Routes>
         <Route path={"/anecdotes/:id"} element={<Anecdote anecdotes={anecdotes}></Anecdote>}></Route>
         <Route path={"/"} element={<AnecdoteList anecdotes={anecdotes}></AnecdoteList>}></Route>
         <Route path={"/about"} element={<About></About>}></Route>
-        <Route path={"/create"} element={<CreateNew></CreateNew>}></Route>
+        <Route path={"/create"} element={<CreateNew addNew={addNew}></CreateNew>}></Route>
       </Routes>
 
       <Footer />
